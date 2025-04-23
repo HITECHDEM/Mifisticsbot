@@ -1,7 +1,34 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM загружен');
+    
     // Инициализация Telegram WebApp
-    const tg = window.Telegram.WebApp;
-    tg.expand(); // Расширяем приложение на весь экран
+    let tg;
+    try {
+        tg = window.Telegram.WebApp;
+        tg.expand(); // Расширяем приложение на весь экран
+        console.log('Telegram WebApp инициализирован');
+    } catch (e) {
+        console.error('Ошибка инициализации Telegram WebApp:', e);
+    }
+    
+    // Получаем элементы DOM
+    const startButton = document.getElementById('start-button');
+    const greetingScreen = document.getElementById('greeting');
+    const quizScreen = document.getElementById('quiz');
+    const finalScreen = document.getElementById('final');
+    const questionText = document.getElementById('question');
+    const locationMessage = document.getElementById('location-message');
+    const questionImage = document.getElementById('question-image');
+    const optionsContainer = document.querySelector('.options');
+    const hintButton = document.getElementById('hint-button');
+    const hintText = document.getElementById('hint');
+    const locationHint = document.getElementById('location-hint');
+    
+    // Проверяем наличие кнопки старта
+    if (!startButton) {
+        console.error('Кнопка "Начать приключение" не найдена!');
+        return;
+    }
     
     // Массив с вопросами и ответами
     const questions = [
@@ -84,15 +111,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // Флаг показа детальной подсказки
     let detailedHintShown = false;
     
-    // Обработчик нажатия на кнопку старта
-    document.getElementById('start-button').addEventListener('click', function() {
-        document.getElementById('greeting').classList.add('hidden');
-        document.getElementById('quiz').classList.remove('hidden');
-        showQuestion(currentQuestion);
-    });
+    // ИСПРАВЛЕНИЕ: Явно задаем обработчик клика на кнопку старта
+    startButton.onclick = function(event) {
+        console.log('Кнопка Начать нажата');
+        if (greetingScreen && quizScreen) {
+            greetingScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            showQuestion(currentQuestion);
+        } else {
+            console.error('Ошибка: не найдены экраны приветствия или квиза');
+        }
+    };
     
-    // Функция отображения вопроса
+    // Отображение вопроса
     function showQuestion(index) {
+        console.log('Показываем вопрос', index);
+        
         if (index >= questions.length) {
             showFinal();
             return;
@@ -104,87 +138,100 @@ document.addEventListener('DOMContentLoaded', function() {
         hintShown = false;
         detailedHintShown = false;
         
-        // Устанавливаем изображение - всегда адаптируем к контейнеру
-        const questionImage = document.getElementById('question-image');
-        questionImage.src = question.image;
+        // Устанавливаем изображение
+        if (questionImage) {
+            questionImage.src = question.image;
+        }
         
-        // ПОЛНОСТЬЮ очищаем все элементы, связанные с вопросом
-        document.getElementById('question').innerHTML = '';
-        document.getElementById('location-message').innerHTML = '';
-        document.querySelector('.options').innerHTML = '';
-        document.getElementById('hint').classList.add('hidden');
-        document.getElementById('location-hint').classList.add('hidden');
+        // ПОЛНОСТЬЮ очищаем все элементы
+        if (questionText) questionText.innerHTML = '';
+        if (locationMessage) locationMessage.innerHTML = '';
+        if (optionsContainer) optionsContainer.innerHTML = '';
+        if (hintText) hintText.classList.add('hidden');
+        if (locationHint) locationHint.classList.add('hidden');
         
-        // Сначала скрываем все, что связано с вопросами
-        document.getElementById('question').classList.add('hidden');
-        document.querySelector('.options').classList.add('hidden');
-        document.getElementById('hint-button').classList.add('hidden');
-        document.getElementById('location-message').classList.add('hidden');
+        // Скрываем все элементы
+        if (questionText) questionText.classList.add('hidden');
+        if (optionsContainer) optionsContainer.classList.add('hidden');
+        if (hintButton) hintButton.classList.add('hidden');
+        if (locationMessage) locationMessage.classList.add('hidden');
         
-        // Теперь показываем только то, что нужно
+        // Показываем нужные элементы в зависимости от типа вопроса
         if (question.isLocation) {
             // Для вопросов с локацией
-            document.getElementById('location-message').classList.remove('hidden');
-            document.getElementById('location-message').textContent = question.location;
-            
-            // Добавляем кнопку для перехода к следующему вопросу
-            const nextButton = document.createElement('button');
-            nextButton.className = 'main-button';
-            nextButton.textContent = 'Следующий вопрос';
-            nextButton.style.marginTop = '20px';
-            document.getElementById('location-message').appendChild(document.createElement('br'));
-            document.getElementById('location-message').appendChild(nextButton);
-            
-            // Обработчик нажатия на кнопку
-            nextButton.addEventListener('click', function() {
-                currentQuestion++;
-                showQuestion(currentQuestion);
-            });
+            if (locationMessage) {
+                locationMessage.classList.remove('hidden');
+                locationMessage.textContent = question.location;
+                
+                // Добавляем кнопку для перехода к следующему вопросу
+                const nextButton = document.createElement('button');
+                nextButton.className = 'main-button';
+                nextButton.textContent = 'Следующий вопрос';
+                nextButton.style.marginTop = '20px';
+                locationMessage.appendChild(document.createElement('br'));
+                locationMessage.appendChild(nextButton);
+                
+                // Обработчик для кнопки следующего вопроса
+                nextButton.onclick = function() {
+                    currentQuestion++;
+                    showQuestion(currentQuestion);
+                };
+            }
         } else {
             // Для обычных вопросов
-            document.getElementById('question').classList.remove('hidden');
-            document.querySelector('.options').classList.remove('hidden');
-            document.getElementById('hint-button').classList.remove('hidden');
+            if (questionText) {
+                questionText.classList.remove('hidden');
+                questionText.textContent = question.question;
+            }
             
-            document.getElementById('question').textContent = question.question;
-            
-            // Создаем варианты ответов
-            const optionsContainer = document.querySelector('.options');
-            question.options.forEach((option, i) => {
-                const optionElement = document.createElement('div');
-                optionElement.className = 'option';
-                optionElement.textContent = option;
+            if (optionsContainer) {
+                optionsContainer.classList.remove('hidden');
                 
-                optionElement.addEventListener('click', function() {
-                    checkAnswer(i);
+                // Создаем варианты ответов
+                question.options.forEach((option, i) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'option';
+                    optionElement.textContent = option;
+                    
+                    optionElement.onclick = function() {
+                        checkAnswer(i);
+                    };
+                    
+                    optionsContainer.appendChild(optionElement);
                 });
-                
-                optionsContainer.appendChild(optionElement);
-            });
+            }
+            
+            if (hintButton) {
+                hintButton.classList.remove('hidden');
+            }
         }
         
         // Обновляем обработчик для кнопки подсказки
-        const hintButton = document.getElementById('hint-button');
-        hintButton.removeEventListener('click', showHint);
-        hintButton.addEventListener('click', showHint);
-    }
-    
-    // Функция отображения подсказки
-    function showHint() {
-        const question = questions[currentQuestion];
-        const hintElement = document.getElementById('hint');
-        
-        if (!hintShown) {
-            hintElement.textContent = question.hint;
-            hintElement.classList.remove('hidden');
-            hintShown = true;
-        } else if (!detailedHintShown) {
-            hintElement.textContent = question.detailedHint;
-            detailedHintShown = true;
+        if (hintButton) {
+            // ИСПРАВЛЕНИЕ: Используем простой onclick вместо addEventListener
+            hintButton.onclick = showHint;
         }
     }
     
-    // Функция проверки ответа
+    // Показать подсказку
+    function showHint() {
+        const question = questions[currentQuestion];
+        
+        if (!hintShown) {
+            if (hintText) {
+                hintText.textContent = question.hint;
+                hintText.classList.remove('hidden');
+                hintShown = true;
+            }
+        } else if (!detailedHintShown) {
+            if (hintText) {
+                hintText.textContent = question.detailedHint;
+                detailedHintShown = true;
+            }
+        }
+    }
+    
+    // Проверка ответа
     function checkAnswer(selectedIndex) {
         const question = questions[currentQuestion];
         const options = document.querySelectorAll('.option');
@@ -194,8 +241,7 @@ document.addEventListener('DOMContentLoaded', function() {
             options[selectedIndex].classList.add('correct');
             
             // Если есть информация о локации, показываем её
-            if (question.location) {
-                const locationHint = document.getElementById('location-hint');
+            if (question.location && locationHint) {
                 locationHint.textContent = question.location;
                 locationHint.classList.remove('hidden');
             }
@@ -210,15 +256,13 @@ document.addEventListener('DOMContentLoaded', function() {
             options[selectedIndex].classList.add('incorrect');
             
             // Показываем подсказку, если еще не показана
-            if (!hintShown) {
-                const hintElement = document.getElementById('hint');
-                hintElement.textContent = question.hint;
-                hintElement.classList.remove('hidden');
+            if (!hintShown && hintText) {
+                hintText.textContent = question.hint;
+                hintText.classList.remove('hidden');
                 hintShown = true;
-            } else if (!detailedHintShown) {
-                const hintElement = document.getElementById('hint');
-                hintElement.textContent = question.detailedHint;
-                hintElement.classList.remove('hidden');
+            } else if (!detailedHintShown && hintText) {
+                hintText.textContent = question.detailedHint;
+                hintText.classList.remove('hidden');
                 detailedHintShown = true;
             }
             
@@ -229,9 +273,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Функция отображения финального экрана
+    // Финальное сообщение
     function showFinal() {
-        document.getElementById('quiz').classList.add('hidden');
-        document.getElementById('final').classList.remove('hidden');
+        if (quizScreen) quizScreen.classList.add('hidden');
+        if (finalScreen) finalScreen.classList.remove('hidden');
     }
 });

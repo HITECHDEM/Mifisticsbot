@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM загружен');
-    
+
     // Инициализация Telegram WebApp
     let tg;
     try {
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) {
         console.error('Ошибка инициализации Telegram WebApp:', e);
     }
-    
+
     // Получаем элементы DOM
     const startButton = document.getElementById('start-button');
     const greetingScreen = document.getElementById('greeting');
@@ -23,13 +23,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const hintButton = document.getElementById('hint-button');
     const hintText = document.getElementById('hint');
     const locationHint = document.getElementById('location-hint');
-    
+    const nextButtonContainer = document.getElementById('next-button-container');
+
     // Проверяем наличие кнопки старта
     if (!startButton) {
         console.error('Кнопка "Начать приключение" не найдена!');
         return;
     }
-    
+
     // Массив с вопросами и ответами
     const questions = [
         {
@@ -68,9 +69,9 @@ document.addEventListener('DOMContentLoaded', function() {
             correctAnswer: 0,
             hint: "Этот зверь считался самым сильным и мудрым в лесу.",
             detailedHint: "По преданиям, это человек, превращенный злым колдуном в дикого зверя. Он умеет ходить на задних лапах.",
-            location: "",
+            location: "Следующий вопрос будет здесь.", // Добавлено сообщение для 4-го вопроса
             image: "https://cdn.culture.ru/images/3a70067a-27b4-5d7d-a019-7db0b286f5d8",
-            isLocation: true
+            isLocation: true // Отмечен как локация
         },
         {
             question: "Какая птица по преданиям древних славян считалась вещей и жила триста лет?",
@@ -99,19 +100,19 @@ document.addEventListener('DOMContentLoaded', function() {
             hint: "Это заклинание Гермиона использовала в первой книге, чтобы открыть запертую дверь.",
             detailedHint: "Алохомора (Алоомора) - заклинание которое открывает простые замки. Не работает на замки, которые защищены магией.",
             location: "",
-            image: "https://kartinkof.club/uploads/posts/2022-03/1648352975_13-kartinkof-club-p-deniel-redkliff-mem-13.jpg",
+            image: "https://i.pinimg.com/736x/8c/73/7c/8c737cd63f0e0cb8622125235cffb8c3.jpg", // Обновлено изображение
             isLocation: false
         }
     ];
-    
+
     // Текущий вопрос
     let currentQuestion = 0;
     // Флаг показа подсказки
     let hintShown = false;
     // Флаг показа детальной подсказки
     let detailedHintShown = false;
-    
-    // ИСПРАВЛЕНИЕ: Явно задаем обработчик клика на кнопку старта
+
+    // Назначаем обработчик клика на кнопку старта
     startButton.onclick = function(event) {
         console.log('Кнопка Начать нажата');
         if (greetingScreen && quizScreen) {
@@ -122,101 +123,110 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Ошибка: не найдены экраны приветствия или квиза');
         }
     };
-    
+
     // Отображение вопроса
     function showQuestion(index) {
         console.log('Показываем вопрос', index);
-        
+
         if (index >= questions.length) {
             showFinal();
             return;
         }
-        
+
         const question = questions[index];
-        
+
         // Сбрасываем флаги подсказок
         hintShown = false;
         detailedHintShown = false;
-        
-        // Устанавливаем изображение
-        if (questionImage) {
-            questionImage.src = question.image;
-        }
-        
-        // ПОЛНОСТЬЮ очищаем все элементы
+
+        // ПОЛНОСТЬЮ очищаем все элементы перед показом нового вопроса
         if (questionText) questionText.innerHTML = '';
         if (locationMessage) locationMessage.innerHTML = '';
         if (optionsContainer) optionsContainer.innerHTML = '';
         if (hintText) hintText.classList.add('hidden');
         if (locationHint) locationHint.classList.add('hidden');
-        
-        // Скрываем все элементы
+        if (nextButtonContainer) nextButtonContainer.innerHTML = ''; // Очищаем контейнер кнопки
+
+        // Сначала скрываем все элементы управления вопросом
         if (questionText) questionText.classList.add('hidden');
+        if (locationMessage) locationMessage.classList.add('hidden');
         if (optionsContainer) optionsContainer.classList.add('hidden');
         if (hintButton) hintButton.classList.add('hidden');
-        if (locationMessage) locationMessage.classList.add('hidden');
-        
+
+        // Устанавливаем изображение
+        if (questionImage) {
+            questionImage.src = question.image;
+            // Стиль object-fit теперь устанавливается в CSS
+        }
+
         // Показываем нужные элементы в зависимости от типа вопроса
         if (question.isLocation) {
             // Для вопросов с локацией
             if (locationMessage) {
                 locationMessage.classList.remove('hidden');
                 locationMessage.textContent = question.location;
-                
-                // Добавляем кнопку для перехода к следующему вопросу
+            }
+            // Показываем варианты ответов и кнопку подсказки
+             if (optionsContainer) {
+                optionsContainer.classList.remove('hidden');
+                 question.options.forEach((option, i) => {
+                    const optionElement = document.createElement('div');
+                    optionElement.className = 'option';
+                    optionElement.textContent = option;
+                    optionElement.onclick = function() { checkAnswer(i); };
+                    optionsContainer.appendChild(optionElement);
+                });
+            }
+            if (hintButton) {
+                hintButton.classList.remove('hidden');
+            }
+
+            // Добавляем кнопку для перехода к следующему вопросу
+            if (nextButtonContainer) {
                 const nextButton = document.createElement('button');
                 nextButton.className = 'main-button';
                 nextButton.textContent = 'Следующий вопрос';
                 nextButton.style.marginTop = '20px';
-                locationMessage.appendChild(document.createElement('br'));
-                locationMessage.appendChild(nextButton);
-                
-                // Обработчик для кнопки следующего вопроса
                 nextButton.onclick = function() {
                     currentQuestion++;
                     showQuestion(currentQuestion);
                 };
+                nextButtonContainer.appendChild(nextButton);
             }
+
         } else {
             // Для обычных вопросов
             if (questionText) {
                 questionText.classList.remove('hidden');
                 questionText.textContent = question.question;
             }
-            
             if (optionsContainer) {
                 optionsContainer.classList.remove('hidden');
-                
                 // Создаем варианты ответов
                 question.options.forEach((option, i) => {
                     const optionElement = document.createElement('div');
                     optionElement.className = 'option';
                     optionElement.textContent = option;
-                    
-                    optionElement.onclick = function() {
-                        checkAnswer(i);
-                    };
-                    
+                    optionElement.onclick = function() { checkAnswer(i); };
                     optionsContainer.appendChild(optionElement);
                 });
             }
-            
             if (hintButton) {
                 hintButton.classList.remove('hidden');
             }
         }
-        
+
         // Обновляем обработчик для кнопки подсказки
         if (hintButton) {
-            // ИСПРАВЛЕНИЕ: Используем простой onclick вместо addEventListener
             hintButton.onclick = showHint;
         }
     }
-    
+
     // Показать подсказку
     function showHint() {
         const question = questions[currentQuestion];
-        
+        if (!question) return; // Добавлена проверка
+
         if (!hintShown) {
             if (hintText) {
                 hintText.textContent = question.hint;
@@ -226,35 +236,43 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (!detailedHintShown) {
             if (hintText) {
                 hintText.textContent = question.detailedHint;
-                detailedHintShown = true;
+                detailedHintShown = true; // Не скрываем после показа
             }
         }
     }
-    
+
     // Проверка ответа
     function checkAnswer(selectedIndex) {
         const question = questions[currentQuestion];
+        if (!question) return; // Добавлена проверка
+
         const options = document.querySelectorAll('.option');
-        
+        if (!options || options.length <= selectedIndex) return; // Проверка
+
+        // Блокируем дальнейшие нажатия на варианты
+        options.forEach(opt => opt.onclick = null);
+
         if (selectedIndex === question.correctAnswer) {
             // Правильный ответ
             options[selectedIndex].classList.add('correct');
-            
-            // Если есть информация о локации, показываем её
-            if (question.location && locationHint) {
-                locationHint.textContent = question.location;
-                locationHint.classList.remove('hidden');
+
+            // Если это не вопрос-локация, переходим к следующему
+            if (!question.isLocation) {
+                 if (question.location && locationHint) { // Показываем подсказку о локации, если она есть у не-локационного вопроса (например, 1-й вопрос)
+                    locationHint.textContent = question.location;
+                    locationHint.classList.remove('hidden');
+                 }
+                 setTimeout(() => {
+                     currentQuestion++;
+                     showQuestion(currentQuestion);
+                 }, 1500);
             }
-            
-            // Переходим к следующему вопросу через паузу
-            setTimeout(() => {
-                currentQuestion++;
-                showQuestion(currentQuestion);
-            }, 1500);
+            // Если это вопрос-локация, пользователь нажмет кнопку "Следующий вопрос"
+
         } else {
             // Неправильный ответ
             options[selectedIndex].classList.add('incorrect');
-            
+
             // Показываем подсказку, если еще не показана
             if (!hintShown && hintText) {
                 hintText.textContent = question.hint;
@@ -262,17 +280,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 hintShown = true;
             } else if (!detailedHintShown && hintText) {
                 hintText.textContent = question.detailedHint;
-                hintText.classList.remove('hidden');
                 detailedHintShown = true;
             }
-            
-            // Убираем класс неправильного ответа через паузу
+
+            // Убираем класс неправильного ответа и восстанавливаем клики
             setTimeout(() => {
                 options[selectedIndex].classList.remove('incorrect');
+                 // Восстанавливаем клики на варианты
+                 options.forEach((opt, i) => {
+                     opt.onclick = function() { checkAnswer(i); };
+                 });
             }, 1000);
         }
     }
-    
+
     // Финальное сообщение
     function showFinal() {
         if (quizScreen) quizScreen.classList.add('hidden');

@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
             hint: "Один взгляд на неё превращал в камень.",
             detailedHint: "Она была одной из трёх сестёр с змеями вместо волос. Персей убил её, используя свой щит как зеркало.",
             location: "Загляни в тумбу, там тебя ждёт следующая подсказка.",
-            image: "https://i.pinimg.com/736x/7b/52/c9/7b52c9c10b1b143e709458d6bdad49a4.jpg"
+            image: "https://i.pinimg.com/736x/7b/52/c9/7b52c9c10b1b143e709458d6bdad49a4.jpg",
+            isLocation: false
         },
         {
             question: "Птица, возрождающаяся из пепла — символ бессмертия и возрождения.",
@@ -21,7 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
             hint: "По легенде она живёт почти 500 лет, затем сгорает и возрождается вновь.",
             detailedHint: "Эта птица ассоциируется с огнём и солнцем. В мифологии разных народов она символизирует бессмертие.",
             location: "Загляни в микроволновку, там следующая подсказка.",
-            image: "https://cs12.pikabu.ru/video/2022/06/27/12/og_og_1656363324335587978.jpg"
+            image: "https://cs12.pikabu.ru/video/2022/06/27/12/og_og_1656363324335587978.jpg",
+            isLocation: true
         },
         {
             question: "Уязвимая часть тела, которая погубила героя Ахилла.",
@@ -30,7 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
             hint: "По легенде его мать окунула его в реку Стикс, держа за эту часть тела.",
             detailedHint: "Именно из-за этой незащищённой части тела появилось выражение «ахиллесова ...»",
             location: "Загляни под подушку на диване.",
-            image: "https://i.pinimg.com/originals/5a/6d/95/5a6d9535851af7e77cdc12dea4d5d4a5.jpg"
+            image: "https://i.pinimg.com/originals/5a/6d/95/5a6d9535851af7e77cdc12dea4d5d4a5.jpg",
+            isLocation: true
         },
         {
             question: "В образе какого зверя изображался древнеславянский бог Велес – покровитель диких зверей и домашних животных?",
@@ -38,7 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
             correctAnswer: 0,
             hint: "Этот зверь считался самым сильным и мудрым в лесу.",
             detailedHint: "По преданиям, это человек, превращенный злым колдуном в дикого зверя. Он умеет ходить на задних лапах.",
-            image: "https://cdn.culture.ru/images/3a70067a-27b4-5d7d-a019-7db0b286f5d8"
+            location: "",
+            image: "https://cdn.culture.ru/images/3a70067a-27b4-5d7d-a019-7db0b286f5d8",
+            isLocation: true
         },
         {
             question: "Какая птица по преданиям древних славян считалась вещей и жила триста лет?",
@@ -46,7 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
             correctAnswer: 1,
             hint: "Эта птица питается только мертвечиной.",
             detailedHint: "Эта черная птица в мифологии многих народов ассоциируется с мудростью и долголетием.",
-            image: "https://stranatur.ru/img5/33_1035_post_media_OH30.jpeg"
+            location: "",
+            image: "https://stranatur.ru/img5/33_1035_post_media_OH30.jpeg",
+            isLocation: false
         },
         {
             question: "Как называется племя, в котором живет Джейкоб в саге 'Сумерки'?",
@@ -54,7 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
             correctAnswer: 2,
             hint: "Это племя коренных американцев, члены которого могут превращаться в волков.",
             detailedHint: "Члены этого племени являются потомками древних оборотней и смертельными врагами вампиров.",
-            image: "https://i.ytimg.com/vi/IaplwFDzsRA/maxresdefault.jpg"
+            location: "",
+            image: "https://i.ytimg.com/vi/IaplwFDzsRA/maxresdefault.jpg",
+            isLocation: false
         },
         {
             question: "Какое волшебное заклинание открывает все двери в мире Гарри Поттера?",
@@ -62,7 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
             correctAnswer: 1,
             hint: "Это заклинание Гермиона использовала в первой книге, чтобы открыть запертую дверь.",
             detailedHint: "Алохомора (Алоомора) - заклинание которое открывает простые замки. Не работает на замки, которые защищены магией.",
-            image: "https://kartinkof.club/uploads/posts/2022-03/1648352975_13-kartinkof-club-p-deniel-redkliff-mem-13.jpg"
+            location: "",
+            image: "https://kartinkof.club/uploads/posts/2022-03/1648352975_13-kartinkof-club-p-deniel-redkliff-mem-13.jpg",
+            isLocation: false
         }
     ];
     
@@ -73,31 +84,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Флаг показа детальной подсказки
     let detailedHintShown = false;
     
-    // Получаем элементы DOM
-    const greetingScreen = document.getElementById('greeting');
-    const quizScreen = document.getElementById('quiz');
-    const finalScreen = document.getElementById('final');
-    const questionText = document.getElementById('question');
-    const locationMessage = document.getElementById('location-message');
-    const questionImage = document.getElementById('question-image');
-    const optionsContainer = document.querySelector('.options');
-    const hintButton = document.getElementById('hint-button');
-    const hintText = document.getElementById('hint');
-    const locationHint = document.getElementById('location-hint');
-    
     // Обработчик нажатия на кнопку старта
     document.getElementById('start-button').addEventListener('click', function() {
-        greetingScreen.classList.add('hidden');
-        quizScreen.classList.remove('hidden');
-        startQuiz();
+        document.getElementById('greeting').classList.add('hidden');
+        document.getElementById('quiz').classList.remove('hidden');
+        showQuestion(currentQuestion);
     });
     
-    // Начало квиза
-    function startQuiz() {
-        showQuestion(currentQuestion);
-    }
-    
-    // Отображение вопроса
+    // Функция отображения вопроса
     function showQuestion(index) {
         if (index >= questions.length) {
             showFinal();
@@ -110,69 +104,87 @@ document.addEventListener('DOMContentLoaded', function() {
         hintShown = false;
         detailedHintShown = false;
         
-        // Устанавливаем изображение
+        // Устанавливаем изображение - всегда адаптируем к контейнеру
+        const questionImage = document.getElementById('question-image');
         questionImage.src = question.image;
         
-        // Проверяем, является ли это вопросом с локацией (2, 3 или 4 вопрос)
-        if (index === 1 || index === 2 || index === 3) {
-            // Для вопросов 2, 3, 4 показываем только локацию
-            questionText.classList.add('hidden');
-            locationMessage.classList.remove('hidden');
-            locationMessage.innerText = question.location;
-            optionsContainer.classList.add('hidden');
-            hintButton.classList.add('hidden');
+        // ПОЛНОСТЬЮ очищаем все элементы, связанные с вопросом
+        document.getElementById('question').innerHTML = '';
+        document.getElementById('location-message').innerHTML = '';
+        document.querySelector('.options').innerHTML = '';
+        document.getElementById('hint').classList.add('hidden');
+        document.getElementById('location-hint').classList.add('hidden');
+        
+        // Сначала скрываем все, что связано с вопросами
+        document.getElementById('question').classList.add('hidden');
+        document.querySelector('.options').classList.add('hidden');
+        document.getElementById('hint-button').classList.add('hidden');
+        document.getElementById('location-message').classList.add('hidden');
+        
+        // Теперь показываем только то, что нужно
+        if (question.isLocation) {
+            // Для вопросов с локацией
+            document.getElementById('location-message').classList.remove('hidden');
+            document.getElementById('location-message').textContent = question.location;
             
-            // УБРАЛИ автопереход к следующему вопросу
-            // Теперь пользователь сам переходит к следующему вопросу, например, через кнопку или по клику
+            // Добавляем кнопку для перехода к следующему вопросу
+            const nextButton = document.createElement('button');
+            nextButton.className = 'main-button';
+            nextButton.textContent = 'Следующий вопрос';
+            nextButton.style.marginTop = '20px';
+            document.getElementById('location-message').appendChild(document.createElement('br'));
+            document.getElementById('location-message').appendChild(nextButton);
+            
+            // Обработчик нажатия на кнопку
+            nextButton.addEventListener('click', function() {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            });
         } else {
-            // Для остальных вопросов показываем обычный вопрос с вариантами ответов
-            questionText.classList.remove('hidden');
-            locationMessage.classList.add('hidden');
-            optionsContainer.classList.remove('hidden');
-            hintButton.classList.remove('hidden');
+            // Для обычных вопросов
+            document.getElementById('question').classList.remove('hidden');
+            document.querySelector('.options').classList.remove('hidden');
+            document.getElementById('hint-button').classList.remove('hidden');
             
-            // Устанавливаем вопрос
-            questionText.innerText = question.question;
+            document.getElementById('question').textContent = question.question;
             
-            // Очищаем прошлые варианты ответов
-            optionsContainer.innerHTML = '';
+            // Создаем варианты ответов
+            const optionsContainer = document.querySelector('.options');
             question.options.forEach((option, i) => {
                 const optionElement = document.createElement('div');
                 optionElement.className = 'option';
                 optionElement.textContent = option;
-                optionElement.dataset.index = i;
+                
                 optionElement.addEventListener('click', function() {
                     checkAnswer(i);
                 });
+                
                 optionsContainer.appendChild(optionElement);
             });
         }
         
-        // Скрываем подсказки
-        hintText.classList.add('hidden');
-        locationHint.classList.add('hidden');
-        
-        // Убираем предыдущий обработчик
+        // Обновляем обработчик для кнопки подсказки
+        const hintButton = document.getElementById('hint-button');
         hintButton.removeEventListener('click', showHint);
-        // Добавляем новый обработчик для кнопки подсказки
         hintButton.addEventListener('click', showHint);
     }
     
-    // Показать подсказку
+    // Функция отображения подсказки
     function showHint() {
         const question = questions[currentQuestion];
+        const hintElement = document.getElementById('hint');
         
         if (!hintShown) {
-            hintText.innerText = question.hint;
-            hintText.classList.remove('hidden');
+            hintElement.textContent = question.hint;
+            hintElement.classList.remove('hidden');
             hintShown = true;
         } else if (!detailedHintShown) {
-            hintText.innerText = question.detailedHint;
+            hintElement.textContent = question.detailedHint;
             detailedHintShown = true;
         }
     }
     
-    // Проверка ответа
+    // Функция проверки ответа
     function checkAnswer(selectedIndex) {
         const question = questions[currentQuestion];
         const options = document.querySelectorAll('.option');
@@ -181,13 +193,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // Правильный ответ
             options[selectedIndex].classList.add('correct');
             
-            // Показываем локацию (только для первого вопроса)
-            if (currentQuestion === 0) {
-                locationHint.innerText = question.location;
+            // Если есть информация о локации, показываем её
+            if (question.location) {
+                const locationHint = document.getElementById('location-hint');
+                locationHint.textContent = question.location;
                 locationHint.classList.remove('hidden');
             }
             
-            // Переходим к следующему вопросу через небольшую задержку
+            // Переходим к следующему вопросу через паузу
             setTimeout(() => {
                 currentQuestion++;
                 showQuestion(currentQuestion);
@@ -198,24 +211,27 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Показываем подсказку, если еще не показана
             if (!hintShown) {
-                hintText.innerText = question.hint;
-                hintText.classList.remove('hidden');
+                const hintElement = document.getElementById('hint');
+                hintElement.textContent = question.hint;
+                hintElement.classList.remove('hidden');
                 hintShown = true;
             } else if (!detailedHintShown) {
-                hintText.innerText = question.detailedHint;
+                const hintElement = document.getElementById('hint');
+                hintElement.textContent = question.detailedHint;
+                hintElement.classList.remove('hidden');
                 detailedHintShown = true;
             }
             
-            // Через некоторое время убираем стиль неправильного ответа
+            // Убираем класс неправильного ответа через паузу
             setTimeout(() => {
                 options[selectedIndex].classList.remove('incorrect');
             }, 1000);
         }
     }
     
-    // Финальное сообщение
+    // Функция отображения финального экрана
     function showFinal() {
-        quizScreen.classList.add('hidden');
-        finalScreen.classList.remove('hidden');
+        document.getElementById('quiz').classList.add('hidden');
+        document.getElementById('final').classList.remove('hidden');
     }
 });

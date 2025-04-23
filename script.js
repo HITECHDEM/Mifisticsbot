@@ -122,11 +122,8 @@ document.addEventListener('DOMContentLoaded', function() {
             optionsContainer.classList.add('hidden');
             hintButton.classList.add('hidden');
             
-            // Автоматический переход к следующему вопросу через 10 секунд
-            setTimeout(() => {
-                currentQuestion++;
-                showQuestion(currentQuestion);
-            }, 10000);
+            // УБРАЛИ автопереход к следующему вопросу
+            // Теперь пользователь сам переходит к следующему вопросу, например, через кнопку или по клику
         } else {
             // Для остальных вопросов показываем обычный вопрос с вариантами ответов
             questionText.classList.remove('hidden');
@@ -137,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Устанавливаем вопрос
             questionText.innerText = question.question;
             
-            // Создаем варианты ответов
+            // Очищаем прошлые варианты ответов
             optionsContainer.innerHTML = '';
             question.options.forEach((option, i) => {
                 const optionElement = document.createElement('div');

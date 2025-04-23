@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hint: "По легенде она живёт почти 500 лет, затем сгорает и возрождается вновь.",
             detailedHint: "Эта птица ассоциируется с огнём и солнцем. В мифологии разных народов она символизирует бессмертие.",
             location: "Загляни в микроволновку, там следующая подсказка.",
-            image: "https://static.wikia.nocookie.net/warriorsofmyth/images/6/6d/Dbs_Jonathan_Hunt_Bestiary_18_Phoenix_800.jpg/revision/latest?cb=20120104223752"
+            image: "https://cs12.pikabu.ru/video/2022/06/27/12/og_og_1656363324335587978.jpg"
         },
         {
             question: "Уязвимая часть тела, которая погубила героя Ахилла.",
@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const quizScreen = document.getElementById('quiz');
     const finalScreen = document.getElementById('final');
     const questionText = document.getElementById('question');
+    const locationMessage = document.getElementById('location-message');
     const questionImage = document.getElementById('question-image');
     const optionsContainer = document.querySelector('.options');
     const hintButton = document.getElementById('hint-button');
@@ -109,24 +110,46 @@ document.addEventListener('DOMContentLoaded', function() {
         hintShown = false;
         detailedHintShown = false;
         
-        // Устанавливаем вопрос
-        questionText.innerText = question.question;
-        
         // Устанавливаем изображение
         questionImage.src = question.image;
         
-        // Создаем варианты ответов
-        optionsContainer.innerHTML = '';
-        question.options.forEach((option, i) => {
-            const optionElement = document.createElement('div');
-            optionElement.className = 'option';
-            optionElement.textContent = option;
-            optionElement.dataset.index = i;
-            optionElement.addEventListener('click', function() {
-                checkAnswer(i);
+        // Проверяем, является ли это вопросом с локацией (2, 3 или 4 вопрос)
+        if (index === 1 || index === 2 || index === 3) {
+            // Для вопросов 2, 3, 4 показываем только локацию
+            questionText.classList.add('hidden');
+            locationMessage.classList.remove('hidden');
+            locationMessage.innerText = question.location;
+            optionsContainer.classList.add('hidden');
+            hintButton.classList.add('hidden');
+            
+            // Автоматический переход к следующему вопросу через 10 секунд
+            setTimeout(() => {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }, 10000);
+        } else {
+            // Для остальных вопросов показываем обычный вопрос с вариантами ответов
+            questionText.classList.remove('hidden');
+            locationMessage.classList.add('hidden');
+            optionsContainer.classList.remove('hidden');
+            hintButton.classList.remove('hidden');
+            
+            // Устанавливаем вопрос
+            questionText.innerText = question.question;
+            
+            // Создаем варианты ответов
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, i) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = option;
+                optionElement.dataset.index = i;
+                optionElement.addEventListener('click', function() {
+                    checkAnswer(i);
+                });
+                optionsContainer.appendChild(optionElement);
             });
-            optionsContainer.appendChild(optionElement);
-        });
+        }
         
         // Скрываем подсказки
         hintText.classList.add('hidden');
@@ -161,8 +184,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Правильный ответ
             options[selectedIndex].classList.add('correct');
             
-            // Показываем локацию (только для первых трех вопросов)
-            if (currentQuestion < 3) {
+            // Показываем локацию (только для первого вопроса)
+            if (currentQuestion === 0) {
                 locationHint.innerText = question.location;
                 locationHint.classList.remove('hidden');
             }

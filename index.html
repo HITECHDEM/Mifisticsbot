@@ -3,18 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мифический квиз для Насти</title>
+    <title>Мифический квиз для Насти ❤️</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div id="app">
         <div id="greeting" class="screen">
+            <div class="heart-container">
+                <div class="heart"></div>
+            </div>
             <h1>С Днём Рождения, Настя! ✨</h1>
             <p>В твой особенный день я приготовил для тебя небольшое приключение!</p>
             <p>Тебя ждёт путешествие по мифам и легендам, которое приведёт к сюрпризу.</p>
-            <p>Готова отправиться в мир загадок?</p>
+            <p>Я тебя очень люблю! 😘</p>
             <button id="start-button" class="main-button">Начать приключение</button>
+            <div class="kiss-container">
+                <div class="kiss">😘</div>
+                <div class="kiss">😘</div>
+                <div class="kiss">😘</div>
+            </div>
         </div>
         <div id="quiz" class="screen hidden">
             <div class="quiz-container">
@@ -22,6 +30,7 @@
                     <img id="question-image" src="" alt="Изображение к вопросу">
                 </div>
                 <div id="question" class="question"></div>
+                <div id="location-message" class="location-message hidden"></div>
                 <div class="options"></div>
                 <button id="hint-button" class="hint-button">Подсказка</button>
                 <div id="hint" class="hint hidden"></div>
@@ -30,10 +39,24 @@
         </div>
         <div id="final" class="screen hidden">
             <div class="final-message">
+                <div class="heart-container">
+                    <div class="heart"></div>
+                </div>
                 <h1>Поздравляю! 🎉</h1>
                 <p>Ты успешно прошла все испытания!</p>
                 <p>Твой подарок в духовке! 🔥</p>
                 <p>Поспеши, а то сгорит! 😉</p>
+                <p class="love-message">Я тебя очень-очень люблю! Желаю тебе счастья, здоровья, исполнения всех желаний и чтобы каждый день был наполнен радостью и волшебством! ❤️</p>
+                <div class="wish-message">
+                    <p>Пусть этот день будет особенным, как ты!</p>
+                    <p>Пусть каждое мгновение будет наполнено радостью и волшебством!</p>
+                    <p>Ты — моя богиня, моя муза, мое вдохновение!</p>
+                </div>
+                <div class="kiss-container">
+                    <div class="kiss">😘</div>
+                    <div class="kiss">😘</div>
+                    <div class="kiss">😘</div>
+                </div>
             </div>
         </div>
     </div>

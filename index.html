@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мифический квиз для Насти</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div id="greeting" class="screen">
+            <h1>С Днём Рождения, Настя! ✨</h1>
+            <p>В твой особенный день я приготовил для тебя небольшое приключение!</p>
+            <p>Тебя ждёт путешествие по мифам и легендам, которое приведёт к сюрпризу.</p>
+            <p>Готова отправиться в мир загадок?</p>
+            <button id="start-button" class="main-button">Начать приключение</button>
+        </div>
+        <div id="quiz" class="screen hidden">
+            <div class="quiz-container">
+                <div class="image-container">
+                    <img id="question-image" src="" alt="Изображение к вопросу">
+                </div>
+                <div id="question" class="question"></div>
+                <div class="options"></div>
+                <button id="hint-button" class="hint-button">Подсказка</button>
+                <div id="hint" class="hint hidden"></div>
+                <div id="location-hint" class="location-hint hidden"></div>
+            </div>
+        </div>
+        <div id="final" class="screen hidden">
+            <div class="final-message">
+                <h1>Поздравляю! 🎉</h1>
+                <p>Ты успешно прошла все испытания!</p>
+                <p>Твой подарок в духовке! 🔥</p>
+                <p>Поспеши, а то сгорит! 😉</p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
